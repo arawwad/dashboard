@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ"
+        crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.6.6/sweetalert2.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.6.6/sweetalert2.min.css">
+    <style>
+        body {
+            min-height: 100vh;
+            background: linear-gradient(to right, #ffffff 0%, #e5e5e5 100%);
+        }
+
+        .box {
+            min-height: 70vh;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container main">
+        <div class="row justify-content-center align-items-center box">
+            <div class="col-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title text-center">
+                            Log in
+                        </h3>
+                    </div>
+                    <div class="card-group">
+                        <form class="container mt-3">
+                            <div class="form-group row">
+                                <label for="inputUser" class="col-4 col-form-label">User Name</label>
+                                <div class="col-8">
+                                    <input class="form-control" type="text" id="inputUser">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="inputPassword" class="col-4 col-form-label">Password</label>
+                                <div class="col-8">
+                                    <input class="form-control" type="password" id="inputPassword">
+                                </div>
+                            </div>
+                            <div class="form-group row justify-content-center">
+                                <button class="btn btn-primary" type="submit" id="submit">Sign In</button>
+                            </div>
+                        </form>
+                        <small class="card-text  pl-1">
+                            If you don't have an account, Please Sign Up <a class="card-link" href="./signUp.html">here</a> 
+                            </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
+        crossorigin="anonymous"></script>
+
+    <script>
+            $(function () {
+                sessionStorage.clear()
+                if (localStorage.database) {
+                    var database = JSON.parse(localStorage.database);
+                } else {
+                    var database = [];
+                }
+                var submit = $("#submit");
+                var comments = [];
+
+                submit.on("click", event => {
+                    event.preventDefault();
+
+                    var user = $("#inputUser")[0].value.trim().toLowerCase();
+                    var password = $("#inputPassword")[0].value;
+
+
+
+                    if (user === "" || password === "") {
+                        swal("Error", "You have to provide all fields", "error");
+                        return;
+                    }
+                    var userData = database.find(el => el.user === user)
+                    if (userData) {
+                        if (userData.password !== password) {
+                            swal("Error", "Password is not correct",
+                                "error");
+                            return;
+                        }
+                        sessionStorage.currentUser = user;
+                        swal(
+                            "Successful",
+                            "you will be redirected to your dashboard",
+                            "success");
+
+                        setTimeout(() => window.location = "dashboard.html", 1000)
+                    } else {
+                        swal("This user doesn't exist", "Please sign up", "error");
+                        return;
+                    }
+
+                    ;
+
+
+
+                })
+
+
+            });
+    
+    </script>
+
+</body>
+
+</html>

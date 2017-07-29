@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+      <meta http-equiv="X-UA-Compatible" content="ie=edge">
+      <title></title>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.6.6/sweetalert2.min.js"></script>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.6.6/sweetalert2.min.css">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ"
+            crossorigin="anonymous">
+      <style>
+            .timeRow {
+                  width: 20%
+            }
+      </style>
+</head>
+
+<body>
+      <nav class="navbar navbar-toggleable-md navbar-inverse bg-inverse sticky-top">
+            <button class="navbar-toggler navbar-toggler-right" data-toggle="collapse" data-target="#navBarContent" type="button">
+              <span class="navbar-toggler-icon"></span>
+        </button>
+            <a href="#" class="navbar-brand">Dashboard</a>
+
+            <div class="collapse navbar-collapse" id="navBarContent">
+                  <ul class="navbar-nav ml-auto">
+                        <li class="nav-item active"><a href="#" class="nav-link">Home</a></li>
+                        <li class="nav-item"><a href="#" class="nav-link">Settings</a></li>
+                        <li class="nav-item"><a href="signIn.html" class="nav-link">Sign Out</a></li>
+                  </ul>
+            </div>
+      </nav>
+
+      <div class="container">
+            <div class="row">
+                  <h1 class="display-1">Dashboard</h1>
+                  <div class="table-responsive">
+                        <table class="table table-striped">
+                              <thead>
+                                    <tr>
+                                          <th class="timeRow">Time</th>
+                                          <th>Comment</th>
+                                    </tr>
+                              </thead>
+                              <tbody>
+                                    <template id="target"></template>
+                                    <tr>
+                                          <td id=currentTime class="align-middle"></td>
+                                          <td><input class="form-control w-100" type="text" name="" value="" placeHolder="New Comment here"
+                                                      id="inputComment"></td>
+                                    </tr>
+                              </tbody>
+                        </table>
+                  </div>
+                  <div class="card bg-info p-2 w-50 mx-auto text-center">
+                        press enter to comment
+                  </div>
+            </div>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"></script>
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
+                  crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+            <script>
+                  $(function () {
+
+                        var currentUser = sessionStorage.currentUser
+
+                        if (currentUser === undefined){
+                              swal("Error","Please Sign in first ","error")
+                              setTimeout(()=>window.location="signIn.html",1000)
+                        }     
+
+                        var database= JSON.parse(localStorage.database);
+                        var userIndex  = database.findIndex(el=>el.user===currentUser);
+                        var userData=database[userIndex];
+                        var comments = userData.comments;
+                        $("tr:last").before(comments); // Render comments saved in the local storage
+
+                        setInterval(() =>
+                              $("#currentTime").html(moment().format('MMMM Do YYYY, h:mm:ss a')),
+                              1000)
+
+                        $("#inputComment").keypress(event => {
+                              if (event.which == 13) { //check if enter is pressed
+                                    if (!event.target.value) {
+                                          swal("Error","your comment is empty","error");
+                                          return;
+                                    }
+                                    newRow =
+                                          `
+                                    <tr>
+                                          <td>
+                                         ${ moment().format('MMMM Do YYYY, h:mm:ss a')}     
+                                          </td>
+                                          <td>
+                                          ${event.target.value}
+                                          </td>
+                                    </tr>`;
+
+                                    comments.push(newRow);
+                                    $("tr:last").before(newRow);
+                                    event.target.value = "";
+                                    localStorage.database=JSON.stringify(database);
+                              }
+                        })
+
+                  })
+            </script>
+</body>
+
+</html>

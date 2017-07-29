@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Title</title>
+
+    <!-- bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ"
+        crossorigin="anonymous">
+
+    <!-- sweetalert -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.6.6/sweetalert2.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/6.6.6/sweetalert2.min.css">
+
+
+    <style>
+        body {
+            min-height: 100vh;
+            background: linear-gradient(to right, #ffffff 0%, #e5e5e5 100%);
+        }
+
+        .box {
+            min-height: 70vh;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container main">
+        <div class="row justify-content-center align-items-center box">
+            <div class="col-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title text-center">
+                            Sign up
+                        </h3>
+                    </div>
+                    <div class="card-group">
+                        <form class="container mt-3">
+                            <div class="form-group row">
+                                <label for="inputUser" class="col-4 col-form-label">User Name</label>
+                                <div class="col-8">
+                                    <input class="form-control" type="text" id="inputUser" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="inputPassword" class="col-4 col-form-label">Password</label>
+                                <div class="col-8">
+                                    <input class="form-control" type="password" id="inputPassword" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="confirmPassword" class="col-4 col-form-label">Confirm Password</label>
+                                <div class="col-8">
+                                    <input class="form-control" type="password" id="confirmPassword" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group row justify-content-center">
+                                <button class="btn btn-primary" id="submit">Sign Up</button>
+                            </div>
+                        </form>
+                        <small class="card-text  pl-1">
+                            If you are already registered, Please Sign In <a class="card-link" href="./signIn.html">here</a> 
+                            </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
+        crossorigin="anonymous"></script>
+
+
+    <script>
+        $(function () {
+            sessionStorage.clear() //sign out current users
+
+            if (localStorage.database) { //check if database available on local storge 
+                var database = JSON.parse(localStorage.database);
+            } else {
+                var  database = [];
+            }
+            var submit = $("#submit");
+            var comments = [];
+
+            submit.on("click", event => {
+                event.preventDefault();
+
+                var user = $("#inputUser")[0].value.trim().toLowerCase();
+                var password = $("#inputPassword")[0].value;
+                var confirmPassword = $("#confirmPassword")[0].value;
+
+
+
+                if (user === "" || password === "" || !confirmPassword === "") {
+                    swal("Error", "You have to provide all fields", "error");
+                    return;
+                }
+
+                if (database.find(el => el.user === user)) {
+                    swal("This user is already registered", "Please sign in", "error");
+                    return;
+                }
+
+                if (password !== confirmPassword) {
+                    swal("Error", "Password confirmation doesn't match your password", "error");
+                    return;
+
+                }
+                database.push({
+                    user,
+                    password,
+                    comments
+                });
+                localStorage.database = JSON.stringify(database);
+                sessionStorage.currentUser = user;
+                swal(
+                    "Account made",
+                    "you will be redirected to your dashboard",
+                    "success");
+
+                setTimeout(()=>window.location="dashboard.html",1000)
+
+            })
+
+
+        });
+    </script>
+
+</body>
+
+</html>
