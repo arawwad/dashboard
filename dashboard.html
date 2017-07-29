@@ -42,14 +42,15 @@
                                     <tr>
                                           <th class="timeRow">Time</th>
                                           <th>Comment</th>
+                                          <th>Control</th>
                                     </tr>
                               </thead>
                               <tbody>
-                                    <template id="target"></template>
                                     <tr>
                                           <td id=currentTime class="align-middle"></td>
                                           <td><input class="form-control w-100" type="text" name="" value="" placeHolder="New Comment here"
                                                       id="inputComment"></td>
+                                                      <td></td>
                                     </tr>
                               </tbody>
                         </table>
@@ -68,14 +69,14 @@
 
                         var currentUser = sessionStorage.currentUser
 
-                        if (currentUser === undefined){
-                              swal("Error","Please Sign in first ","error")
-                              setTimeout(()=>window.location="signIn.html",1000)
-                        }     
+                        if (currentUser === undefined) {
+                              swal("Error", "Please Sign in first ", "error")
+                              setTimeout(() => window.location = "signIn.html", 1000)
+                        }
 
-                        var database= JSON.parse(localStorage.database);
-                        var userIndex  = database.findIndex(el=>el.user===currentUser);
-                        var userData=database[userIndex];
+                        var database = JSON.parse(localStorage.database);
+                        var userIndex = database.findIndex(el => el.user === currentUser);
+                        var userData = database[userIndex];
                         var comments = userData.comments;
                         $("tr:last").before(comments); // Render comments saved in the local storage
 
@@ -86,28 +87,107 @@
                         $("#inputComment").keypress(event => {
                               if (event.which == 13) { //check if enter is pressed
                                     if (!event.target.value) {
-                                          swal("Error","your comment is empty","error");
+                                          swal("Error", "your comment is empty", "error");
                                           return;
                                     }
+                                    var rowIndex = $(".delete").last().data("index") || 0; // rowIndex is used to give each button a unique id .. it starts the count after the last row available or starts at 0 if the comment list is empty                            
+                                    rowIndex++; 
+
                                     newRow =
                                           `
-                                    <tr>
+                                    <tr class="comment">
                                           <td>
                                          ${ moment().format('MMMM Do YYYY, h:mm:ss a')}     
                                           </td>
                                           <td>
                                           ${event.target.value}
                                           </td>
+                                          <td>
+                                          <button class="btn btn-primary btn-sm edit" data-index=${rowIndex} >Edit</button>
+                                          <button class="btn btn-danger btn-sm delete" data-index=${rowIndex}>Delete</button>
+                                          </td>
                                     </tr>`;
 
                                     comments.push(newRow);
                                     $("tr:last").before(newRow);
                                     event.target.value = "";
-                                    localStorage.database=JSON.stringify(database);
+                                    localStorage.database = JSON.stringify(database);
                               }
+
                         })
 
-                  })
+                        $("table").on("click", ".delete", event => {
+                              var target = $(event.target);
+                              var index = target.data("index")-1;
+                              swal({
+                                    title: 'Are you sure?',
+                                    text: "You won't be able to revert this!",
+                                    type: 'warning',
+                                    showCancelButton: true,
+                                    confirmButtonColor: '#3085d6',
+                                    cancelButtonColor: '#d33',
+                                    confirmButtonText: 'Yes, delete it!'
+                              }).then(function () {
+                                    comments.splice(index,1);
+                                    $("tr.comment").remove();
+                                    $("tr:last").before(comments); 
+
+                                     localStorage.database = JSON.stringify(database);
+
+                                    swal(
+                                          'Deleted!',
+                                          'Your comment has been deleted.',
+                                          'success'
+                                    )
+                              })
+                        });
+
+                        $("table").on("click", ".edit", event => {
+                              var target = $(event.target);
+                              var index = target.data("index")-1;
+                              swal({
+                                    title: 'Edit Comment',
+                                    input: 'text',
+                                    showCancelButton: true,
+                                    inputValidator: function (value) {
+                                          return new Promise(function (
+                                                resolve, reject) {
+                                                if (value) {
+                                                      resolve()
+                                                } else {
+                                                      reject(
+                                                            'You need to write something!'
+                                                      )
+                                                }
+                                          })
+                                    }
+                              }).then(function (result) {
+                                    comments[index]=                                          `
+                                    <tr class="comment">
+                                          <td>
+                                         ${ moment().format('MMMM Do YYYY, h:mm:ss a')}     
+                                          </td>
+                                          <td>
+                                          ${result}
+                                          </td>
+                                          <td>
+                                          <button class="btn btn-primary btn-sm edit" data-index=${index+1} >Edit</button>
+                                          <button class="btn btn-danger btn-sm delete" data-index=${index+1}>Delete</button>
+                                          </td>
+                                    </tr>`;
+
+                                    $("tr.comment").remove();
+                                    $("tr:last").before(comments); 
+                                    localStorage.database = JSON.stringify(database);
+                                    swal({
+                                          text:"Your comment has been edited",
+                                          type: 'success',
+                                    })
+                              })
+                        });
+
+
+                  });
             </script>
 </body>
 
