@@ -137,7 +137,6 @@
                   $("table").on("click", ".delete", event => {
                         var target = $(event.target);
                         var index = target.data("index");
-                        console.log(index);
                         swal({
                               title: 'Are you sure?',
                               text: "You won't be able to revert this!",
@@ -156,11 +155,12 @@
                               )
                         })
                   });
-
+                  
+                  // handle edit button 
+                  
                   $("table").on("click", ".edit", event => {
                         var target = $(event.target);
                         var index = target.data("index");
-                        console.log(index);
                         swal({
                               title: 'Edit Comment',
                               input: 'text',
